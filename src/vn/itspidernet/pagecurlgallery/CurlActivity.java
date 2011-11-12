@@ -125,9 +125,13 @@ public class CurlActivity extends Activity {
 		}
 		@Override
 		public Bitmap getBitmap(int width, int height, int index) {
-			Bitmap b = Bitmap.createBitmap(width, height,
-					Bitmap.Config.ARGB_8888);
-			b.eraseColor(0xFFFFFFFF);
+//			Bitmap b = Bitmap.createBitmap(width, height,
+//					Bitmap.Config.ARGB_8888);
+			Bitmap tmp = BitmapFactory.decodeResource(getResources(), R.drawable.frame_border_texture);
+			Bitmap b = Bitmap.createScaledBitmap(tmp, width, height, true);
+			tmp.recycle();
+			tmp = null;
+//			b.eraseColor(0xFFFFFFFF);
 			Canvas c = new Canvas(b);
 			mImageCur.moveToPosition(index);
 			String id = mImageCur.getString(mImageCur.getColumnIndexOrThrow( Images.Media._ID));

@@ -30,19 +30,26 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.widget.TextView;
 
 /**
  * Simple Activity for curl testing.
@@ -55,9 +62,10 @@ public class CurlActivity extends Activity {
 	private static final String TAG = "CurlActivity";
 	private CurlView mCurlView;
 	private BitmapProvider2 mBitmapProvider = null;
-	private String mCurrentDir = "/mnt/sdcard";
+	private String mCurrentDir = Environment.getExternalStorageState();
 	private String[] mCurrentItems = new String[0];
-	
+	LayoutInflater mLayoutInflater = null;
+	View mView = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -74,7 +82,8 @@ public class CurlActivity extends Activity {
 		mCurlView.setSizeChangedObserver(new SizeChangedObserver());
 		mCurlView.setCurrentIndex(index);
 		mCurlView.setBackgroundColor(0xFF202830);
-
+		mLayoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+		mView = mLayoutInflater.inflate(R.layout.formview, null);
 		// This is something somewhat experimental. Before uncommenting next
 		// line, please see method comments in CurlView.
 		// mCurlView.setEnableTouchPressure(true);
@@ -143,6 +152,7 @@ public class CurlActivity extends Activity {
 			mCurrentUri = Uri.withAppendedPath(uri, id);
 			try {
 				Bitmap bitmap = getBitmapFromUri(mCurrentUri);
+//				bitmap = loadBitmapFromView(mView);
 				Drawable d = new BitmapDrawable(bitmap);
 				int margin = 7;
 				int border = 3;
@@ -169,7 +179,6 @@ public class CurlActivity extends Activity {
 				r.right -= border;
 				r.top += border;
 				r.bottom -= border;
-
 				d.setBounds(r);
 				d.draw(c);
 			} catch (IOException e) {
@@ -292,5 +301,24 @@ public class CurlActivity extends Activity {
 			.show();
 		return super.onOptionsItemSelected(item);
 	}
-
+	
+	public Bitmap loadBitmapFromView(View v) {
+		LayoutParams layoutParams = v.getLayoutParams();
+		if (layoutParams == null) {
+			layoutParams = new LayoutParams(400, 100);
+			v.setLayoutParams(layoutParams);
+		}
+		TextView button = new TextView(this);
+		button.setLayoutParams(layoutParams);
+		button.setText("*******Lâm Phúc Duy ===========");
+		button.setTextColor(Color.BLACK);
+		button.setGravity(Gravity.CENTER);
+		v = button;
+		
+	    Bitmap b = Bitmap.createBitmap( layoutParams.width, layoutParams.height, Bitmap.Config.ARGB_8888);                
+	    Canvas c = new Canvas(b);
+	    v.layout(0, 0, layoutParams.width, layoutParams.height);
+	    v.draw(c);
+	    return b;
+	}
 }
